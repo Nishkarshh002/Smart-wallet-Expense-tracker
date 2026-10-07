@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Wallet & Expense Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #0a0d14;
+      --bg-surface: #121722;
+      --bg-card: rgba(22, 29, 43, 0.7);
+      --bg-card-hover: rgba(30, 40, 58, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(99, 102, 241, 0.6);
+
+      --accent-primary: #6366f1;
+      --accent-primary-hover: #4f46e5;
+      --accent-primary-glow: rgba(99, 102, 241, 0.25);
+
+      --accent-income: #10b981;
+      --accent-income-glow: rgba(16, 185, 129, 0.2);
+      --accent-expense: #f43f5e;
+      --accent-expense-glow: rgba(244, 63, 94, 0.2);
+      --accent-transfer: #0ea5e9;
+      --accent-warning: #f59e0b;
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.25);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+      --glass-blur: blur(16px);
+      --transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+      background-image:
+        radial-gradient(circle at 15% 10%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 25%, rgba(16, 185, 129, 0.08) 0%, transparent 35%),
+        radial-gradient(circle at 50% 90%, rgba(244, 63, 94, 0.08) 0%, transparent 45%);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Container */
+    .app-shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 20px 60px 20px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--accent-primary), #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 8px 16px var(--accent-primary-glow);
+    }
+
+    .brand-text h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition);
+      user-select: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary), #4f46e5);
+      color: white;
+      box-shadow: 0 4px 14px var(--accent-primary-glow);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-subtle);
+      color: var(--text-main);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-income {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: var(--accent-income);
+    }
+
+    .btn-income:hover {
+      background: rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-expense {
+      background: rgba(244, 63, 94, 0.15);
+      border-color: rgba(244, 63, 94, 0.3);
+      color: var(--accent-expense);
+    }
+
+    .btn-expense:hover {
+      background: rgba(244, 63, 94, 0.25);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    /* KPI Highlights */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .kpi-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .kpi-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .kpi-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .kpi-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text-main);
+    }
+
+    .kpi-subtext {
+      font-size: 12px;
+      color: var(--text-faint);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .total-balance .kpi-value {
+      background: linear-gradient(135deg, #ffffff, #818cf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .income-kpi .kpi-value {
+      color: var(--accent-income);
+    }
+
+    .expense-kpi .kpi-value {
+      color: var(--accent-expense);
+    }
+
+    /* Wallets Section */
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .wallets-container {
+      margin-bottom: 32px;
+    }
+
+    .wallets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 16px;
+    }
+
+    .wallet-card {
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      position: relative;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 160px;
+    }
+
+    .wallet-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.08), transparent 60%);
+      pointer-events: none;
+    }
+
+    .wallet-cash {
+      background: linear-gradient(135deg, #13271d, #0d1a14);
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+
+    .wallet-cash.active {
+      box-shadow: 0 0 0 2px var(--accent-income), 0 10px 25px var(--accent-income-glow);
+    }
+
+    .wallet-bank {
+      background: linear-gradient(135deg, #1b203c, #111425);
+      border-color: rgba(99, 102, 241, 0.25);
+    }
+
+    .wallet-bank.active {
+      box-shadow: 0 0 0 2px var(--accent-primary), 0 10px 25px var(--accent-primary-glow);
+    }
+
+    .wallet-card-type {
+      background: linear-gradient(135deg, #2d1829, #1a0f18);
+      border-color: rgba(244, 63, 94, 0.25);
+    }
+
+    .wallet-card-type.active {
+      box-shadow: 0 0 0 2px var(--accent-expense), 0 10px 25px var(--accent-expense-glow);
+    }
+
+    .wallet-savings {
+      background: linear-gradient(135deg, #2b2314, #19140c);
+      border-color: rgba(245, 158, 11, 0.25);
+    }
+
+    .wallet-savings.active {
+      box-shadow: 0 0 0 2px var(--accent-warning), 0 10px 25px rgba(245, 158, 11, 0.2);
+    }
+
+    .wallet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .wallet-info-name {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .wallet-chip {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .wallet-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .wallet-btn-icon {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      border-radius: 6px;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      transition: var(--transition);
+    }
+
+    .wallet-btn-icon:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .wallet-balance-wrap {
+      margin-top: 18px;
+    }
+
+    .wallet-balance-title {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .wallet-balance-amount {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 26px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .wallet-footer-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    /* Main Grid (Breakdown & History) */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 980px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Glass Panels */
+    .panel {
+      background: var(--bg-card);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+    }
+
+    /* Category Breakdown */
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .donut-svg {
+      width: 190px;
+      height: 190px;
+      transform: rotate(-90deg);
+    }
+
+    .donut-center-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .donut-center-amount {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 18px;
+      color: #ffffff;
+    }
+
+    .donut-center-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .category-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .category-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .category-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .category-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .category-name {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .category-bar-wrap {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 3px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+
+    .category-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    .category-amount {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .category-pct {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    /* Transactions Panel */
+    .transactions-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .filter-pill {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .filter-pill.active {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 260px;
+      min-width: 160px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px 7px 32px;
+      color: white;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      border-color: var(--border-focus);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-faint);
+      font-size: 13px;
+    }
+
+    /* Transactions Table */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .tx-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .tx-table th {
+      text-align: left;
+      padding: 12px 14px;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .tx-table td {
+      padding: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      vertical-align: middle;
+    }
+
+    .tx-row {
+      transition: var(--transition);
+    }
+
+    .tx-row:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tx-category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .tx-wallet-tag {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tx-amount {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 14px;
+      text-align: right;
+    }
+
+    .tx-amount.expense {
+      color: var(--accent-expense);
+    }
+
+    .tx-amount.income {
+      color: var(--accent-income);
+    }
+
+    .tx-amount.transfer {
+      color: var(--accent-transfer);
+    }
+
+    .tx-date {
+      color: var(--text-faint);
+      font-size: 12px;
+    }
+
+    .btn-delete-tx {
+      background: transparent;
+      border: none;
+      color: var(--text-faint);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      transition: var(--transition);
+    }
+
+    .btn-delete-tx:hover {
+      color: var(--accent-expense);
+      background: rgba(244, 63, 94, 0.1);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      opacity: 0.6;
+    }
+
+    /* Modal / Dialog */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+      padding: 16px;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: #141b27;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 500px;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.95) translateY(10px);
+      transition: var(--transition);
+    }
+
+    .modal-overlay.open .modal {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .modal-close {
+      background: rgba(255, 255, 255, 0.06);
+      border: none;
+      color: var(--text-muted);
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      color: white;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--accent-primary-glow);
+    }
+
+    .type-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .type-btn {
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .type-btn.active.type-expense {
+      background: rgba(244, 63, 94, 0.2);
+      border-color: var(--accent-expense);
+      color: var(--accent-expense);
+    }
+
+    .type-btn.active.type-income {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--accent-income);
+      color: var(--accent-income);
+    }
+
+    .type-btn.active.type-transfer {
+      background: rgba(14, 165, 233, 0.2);
+      border-color: var(--accent-transfer);
+      color: var(--accent-transfer);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid var(--border-subtle);
+      border-left: 4px solid var(--accent-primary);
+      padding: 14px 20px;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-lg);
+      color: white;
+      font-size: 13.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 2000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      border-left-color: var(--accent-income);
+    }
+
+    .toast.error {
+      border-left-color: var(--accent-expense);
+    }
+
+    /* Currency symbol selector */
+    .currency-select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      outline: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-shell">
+
+    <!-- Top Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">💼</div>
+        <div class="brand-text">
+          <h1>Wallet & Expense Tracker</h1>
+          <p>Real-time physical wallet balance & financial records</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <select id="currencySelector" class="currency-select" title="Change Currency">
+          <option value="₹">₹ (INR)</option>
+          <option value="$">$ (USD)</option>
+          <option value="€">€ (EUR)</option>
+          <option value="£">£ (GBP)</option>
+          <option value="¥">¥ (JPY)</option>
+          <option value="₨">₨ (PKR)</option>
+          <option value="د.إ">د.إ (AED)</option>
+        </select>
+        <button class="btn btn-ghost" id="btnExportCsv" title="Export transactions to CSV">
+          <span>📄</span> Export CSV
+        </button>
+        <button class="btn btn-ghost" id="btnBackupJson" title="Backup or download JSON">
+          <span>💾</span> Backup JSON
+        </button>
+        <button class="btn btn-ghost" id="btnRestoreJson" title="Restore from JSON file">
+          <span>📥</span> Restore
+        </button>
+        <input type="file" id="importFileInput" accept=".json" style="display: none;">
+        <button class="btn btn-primary" id="btnOpenNewTxModal">
+          <span>＋</span> Add Transaction
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Balance Summary Cards -->
+    <section class="kpi-grid">
+      <div class="kpi-card total-balance">
+        <div class="kpi-top">
+          <span class="kpi-label">Total Net Balance</span>
+          <div class="kpi-icon" style="background: rgba(99, 102, 241, 0.15); color: #818cf8;">💳</div>
+        </div>
+        <div class="kpi-value" id="kpiTotalBalance">0.00</div>
+        <div class="kpi-subtext">Sum across all wallets</div>
+      </div>
+
+      <div class="kpi-card income-kpi">
+        <div class="kpi-top">
+          <span class="kpi-label">Total Inflow / Income</span>
+          <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">↗</div>
+        </div>
+        <div class="kpi-value" id="kpiTotalIncome">+0.00</div>
+        <div class="kpi-subtext">Recorded additions & salary</div>
+      </div>
+
+      <div class="kpi-card expense-kpi">
+        <div class="kpi-top">
+          <span class="kpi-label">Total Outflow / Spent</span>
+          <div class="kpi-icon" style="background: rgba(244, 63, 94, 0.15); color: #fb7185;">↘</div>
+        </div>
+        <div class="kpi-value" id="kpiTotalExpense">-0.00</div>
+        <div class="kpi-subtext">All purchases & expenditures</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Active Wallets</span>
+          <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">👛</div>
+        </div>
+        <div class="kpi-value" id="kpiWalletCount">3</div>
+        <div class="kpi-subtext">Cash, Banks & Cards</div>
+      </div>
+    </section>
+
+    <!-- Wallets Display Carousel / Grid -->
+    <section class="wallets-container">
+      <div class="section-title">
+        <span>Payment Wallets & Accounts</span>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-ghost btn-sm" id="btnFilterAllWallets">Show All</button>
+          <button class="btn btn-ghost btn-sm" id="btnAddWalletModal">＋ Add Wallet</button>
+        </div>
+      </div>
+      <div class="wallets-grid" id="walletsGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- Main Layout: Analytics & Transaction List -->
+    <div class="dashboard-layout">
+
+      <!-- Left: Spending Breakdown & Categories -->
+      <aside class="panel">
+        <div class="section-title" style="margin-bottom: 18px;">
+          <span>Category Breakdown</span>
+          <span style="font-size: 12px; color: var(--text-muted);" id="breakdownWalletScope">All Wallets</span>
+        </div>
+
+        <div class="chart-container">
+          <svg class="donut-svg" viewBox="0 0 100 100" id="donutChartSvg">
+            <!-- Dynamic segments -->
+          </svg>
+          <div class="donut-center-text">
+            <div class="donut-center-amount" id="chartTotalExpense">0.00</div>
+            <div class="donut-center-sub">Total Spent</div>
+          </div>
+        </div>
+
+        <div class="category-list" id="categoryBreakdownList">
+          <!-- Rendered dynamically -->
+        </div>
+      </aside>
+
+      <!-- Right: Transactions History & Filters -->
+      <main class="panel">
+        <div class="transactions-toolbar">
+          <div class="filter-pills">
+            <button class="filter-pill active" data-filter="all">All</button>
+            <button class="filter-pill" data-filter="expense">Expenses</button>
+            <button class="filter-pill" data-filter="income">Income</button>
+            <button class="filter-pill" data-filter="transfer">Transfers</button>
+          </div>
+
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchTxInput" placeholder="Search notes, categories...">
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="tx-table">
+            <thead>
+              <tr>
+                <th>Details</th>
+                <th>Wallet</th>
+                <th>Date & Time</th>
+                <th style="text-align: right;">Amount</th>
+                <th style="text-align: center; width: 48px;"></th>
+              </tr>
+            </thead>
+            <tbody id="txTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Modal: Add Transaction -->
+  <div class="modal-overlay" id="modalTransaction">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Record Transaction</h2>
+        <button class="modal-close" onclick="closeModal('modalTransaction')">&times;</button>
+      </div>
+
+      <div class="type-switcher">
+        <button type="button" class="type-btn type-expense active" id="btnTypeExpense"
+          onclick="switchTxType('expense')">
+          <span>↘</span> Expense
+        </button>
+        <button type="button" class="type-btn type-income" id="btnTypeIncome" onclick="switchTxType('income')">
+          <span>↗</span> Income
+        </button>
+        <button type="button" class="type-btn type-transfer" id="btnTypeTransfer" onclick="switchTxType('transfer')">
+          <span>⇄</span> Transfer
+        </button>
+      </div>
+
+      <form id="transactionForm">
+        <div class="form-group">
+          <label class="form-label" for="txAmount">Amount</label>
+          <input type="number" step="0.01" min="0.01" class="form-input" id="txAmount" placeholder="0.00" required
+            autofocus>
+        </div>
+
+        <div class="form-group" id="groupCategory">
+          <label class="form-label" for="txCategory">Category</label>
+          <select class="form-select" id="txCategory">
+            <option value="Food & Dining">🍔 Food & Dining</option>
+            <option value="Transport & Fuel">🚗 Transport & Fuel</option>
+            <option value="Groceries">🛒 Groceries & Essentials</option>
+            <option value="Bills & Utilities">⚡ Bills & Utilities</option>
+            <option value="Shopping">🛍️ Shopping</option>
+            <option value="Entertainment">🎬 Entertainment</option>
+            <option value="Health & Medical">💊 Health & Medical</option>
+            <option value="Education">📚 Education</option>
+            <option value="Salary & Wages">💰 Salary & Wages</option>
+            <option value="Investments">📈 Investments</option>
+            <option value="Gifts & Donations">🎁 Gifts & Donations</option>
+            <option value="General / Other">🏷️ General / Other</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="groupSourceWallet">
+          <label class="form-label" id="labelSourceWallet" for="txWallet">Wallet / Account</label>
+          <select class="form-select" id="txWallet">
+            <!-- Dynamic Wallets -->
+          </select>
+        </div>
+
+        <div class="form-group" id="groupDestWallet" style="display: none;">
+          <label class="form-label" for="txDestWallet">To Destination Wallet</label>
+          <select class="form-select" id="txDestWallet">
+            <!-- Dynamic Wallets -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="txNote">Note / Description (Optional)</label>
+          <input type="text" class="form-input" id="txNote" placeholder="e.g. Lunch with friends, ATM cash withdrawal">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="txDate">Date & Time</label>
+          <input type="datetime-local" class="form-input" id="txDate">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeModal('modalTransaction')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Adjust Wallet Balance / Add Wallet -->
+  <div class="modal-overlay" id="modalWallet">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="walletModalTitle">Add New Wallet</h2>
+        <button class="modal-close" onclick="closeModal('modalWallet')">&times;</button>
+      </div>
+
+      <form id="walletForm">
+        <input type="hidden" id="editWalletId" value="">
+
+        <div class="form-group">
+          <label class="form-label" for="walletName">Wallet Name</label>
+          <input type="text" class="form-input" id="walletName" placeholder="e.g. Physical Cash, HDFC Bank, Chase Card"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="walletType">Wallet Style / Type</label>
+          <select class="form-select" id="walletType">
+            <option value="cash">💵 Cash / Pocket Wallet</option>
+            <option value="bank">🏦 Bank Account / UPI</option>
+            <option value="card">💳 Credit / Debit Card</option>
+            <option value="savings">💰 Savings / Emergency Fund</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="walletBalance">Current Balance</label>
+          <input type="number" step="0.01" class="form-input" id="walletBalance" placeholder="0.00" required>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeModal('modalWallet')">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btnSaveWallet">Save Wallet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast" id="toastMessage">
+    <span id="toastIcon">✓</span>
+    <span id="toastText">Record saved successfully</span>
+  </div>
+
+  <script>
+    // App State & Data Management
+    const STORAGE_KEY = 'smart_wallet_app_data_v1';
+
+    const CATEGORY_COLORS = {
+      'Food & Dining': '#f43f5e',
+      'Transport & Fuel': '#0ea5e9',
+      'Groceries': '#10b981',
+      'Bills & Utilities': '#f59e0b',
+      'Shopping': '#ec4899',
+      'Entertainment': '#8b5cf6',
+      'Health & Medical': '#14b8a6',
+      'Education': '#3b82f6',
+      'Salary & Wages': '#22c55e',
+      'Investments': '#6366f1',
+      'Gifts & Donations': '#d946ef',
+      'Transfer': '#38bdf8',
+      'General / Other': '#94a3b8'
+    };
+
+    const DEFAULT_DATA = {
+      currency: '₹',
+      wallets: [
+        { id: 'w_cash', name: 'Pocket Cash Wallet', type: 'cash', balance: 2500.00 },
+        { id: 'w_bank', name: 'Main Bank (Savings)', type: 'bank', balance: 28400.00 },
+        { id: 'w_card', name: 'Credit Card', type: 'card', balance: 12000.00 }
+      ],
+      transactions: [
+        {
+          id: 'tx_1',
+          type: 'income',
+          amount: 35000.00,
+          walletId: 'w_bank',
+          category: 'Salary & Wages',
+          note: 'Monthly salary credited',
+          date: new Date(Date.now() - 86400000 * 5).toISOString()
+        },
+        {
+          id: 'tx_2',
+          type: 'transfer',
+          amount: 3000.00,
+          walletId: 'w_bank',
+          destWalletId: 'w_cash',
+          category: 'Transfer',
+          note: 'ATM cash withdrawal for wallet',
+          date: new Date(Date.now() - 86400000 * 4).toISOString()
+        },
+        {
+          id: 'tx_3',
+          type: 'expense',
+          amount: 450.00,
+          walletId: 'w_cash',
+          category: 'Food & Dining',
+          note: 'Dinner & snacks with friends',
+          date: new Date(Date.now() - 86400000 * 2).toISOString()
+        },
+        {
+          id: 'tx_4',
+          type: 'expense',
+          amount: 1200.00,
+          walletId: 'w_bank',
+          category: 'Bills & Utilities',
+          note: 'Electricity bill payment',
+          date: new Date(Date.now() - 86400000 * 1).toISOString()
+        },
+        {
+          id: 'tx_5',
+          type: 'expense',
+          amount: 850.00,
+          walletId: 'w_card',
+          category: 'Shopping',
+          note: 'Headphones from online store',
+          date: new Date().toISOString()
+        }
+      ]
+    };
+
+    let appState = loadState();
+    let currentFilterType = 'all';
+    let currentSelectedWallet = null; // null means 'all wallets'
+    let searchQuery = '';
+    let currentTxType = 'expense';
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.wallets) && Array.isArray(parsed.transactions)) {
+            return parsed;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to parse stored data:', err);
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_DATA));
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (err) {
+        console.error('Failed to save to localStorage:', err);
+      }
+      render();
+    }
+
+    // Currency Formatter
+    function formatCurrency(amount) {
+      const curr = appState.currency || '₹';
+      const num = Number(amount || 0).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      return `${curr}${num}`;
+    }
+
+    // Toast Notice
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toastMessage');
+      const text = document.getElementById('toastText');
+      const icon = document.getElementById('toastIcon');
+
+      text.textContent = message;
+      icon.textContent = type === 'success' ? '✓' : '⚠';
+      toast.className = `toast show ${type}`;
+
+      setTimeout(() => {
+        toast.className = 'toast';
+      }, 3200);
+    }
+
+    // Modal Helpers
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    // Switch Transaction Type
+    function switchTxType(type) {
+      currentTxType = type;
+      ['expense', 'income', 'transfer'].forEach(t => {
+        const btn = document.getElementById(`btnType${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        if (btn) {
+          if (t === type) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        }
+      });
+
+      const groupCategory = document.getElementById('groupCategory');
+      const groupDestWallet = document.getElementById('groupDestWallet');
+      const labelSourceWallet = document.getElementById('labelSourceWallet');
+
+      if (type === 'transfer') {
+        groupCategory.style.display = 'none';
+        groupDestWallet.style.display = 'block';
+        labelSourceWallet.textContent = 'From Wallet';
+      } else {
+        groupCategory.style.display = 'block';
+        groupDestWallet.style.display = 'none';
+        labelSourceWallet.textContent = 'Wallet / Account';
+      }
+    }
+
+    // Render Wallets
+    function renderWallets() {
+      const grid = document.getElementById('walletsGrid');
+      grid.innerHTML = '';
+
+      appState.wallets.forEach(wallet => {
+        const card = document.createElement('div');
+        const isActive = currentSelectedWallet === wallet.id;
+        card.className = `wallet-card wallet-${wallet.type} ${isActive ? 'active' : ''}`;
+
+        let typeIcon = '💵';
+        let typeLabel = 'Cash';
+        if (wallet.type === 'bank') { typeIcon = '🏦'; typeLabel = 'Bank'; }
+        if (wallet.type === 'card') { typeIcon = '💳'; typeLabel = 'Card'; }
+        if (wallet.type === 'savings') { typeIcon = '💰'; typeLabel = 'Savings'; }
+
+        card.innerHTML = `
+          <div class="wallet-header">
+            <div class="wallet-info-name">
+              <span>${typeIcon}</span>
+              <span>${escapeHtml(wallet.name)}</span>
+            </div>
+            <div class="wallet-actions">
+              <span class="wallet-chip">${typeLabel}</span>
+              <button class="wallet-btn-icon" title="Edit wallet balance" onclick="event.stopPropagation(); editWallet('${wallet.id}')">✏️</button>
+              <button class="wallet-btn-icon" title="Delete wallet" onclick="event.stopPropagation(); deleteWallet('${wallet.id}')">🗑️</button>
+            </div>
+          </div>
+
+          <div class="wallet-balance-wrap">
+            <div class="wallet-balance-title">Available in Wallet</div>
+            <div class="wallet-balance-amount">${formatCurrency(wallet.balance)}</div>
+          </div>
+
+          <div class="wallet-footer-status">
+            <span>${isActive ? '● Currently Filtered' : 'Click to filter'}</span>
+            <span>ID: ${wallet.id.replace('w_', '')}</span>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          if (currentSelectedWallet === wallet.id) {
+            currentSelectedWallet = null;
+          } else {
+            currentSelectedWallet = wallet.id;
+          }
+          render();
+        });
+
+        grid.appendChild(card);
+      });
+
+      // Update Filter Scope Text
+      const scopeLabel = document.getElementById('breakdownWalletScope');
+      if (currentSelectedWallet) {
+        const found = appState.wallets.find(w => w.id === currentSelectedWallet);
+        scopeLabel.textContent = found ? found.name : 'Selected Wallet';
+      } else {
+        scopeLabel.textContent = 'All Wallets';
+      }
+    }
+
+    // Populate Wallet Dropdowns in Modals
+    function populateWalletDropdowns() {
+      const selectSrc = document.getElementById('txWallet');
+      const selectDest = document.getElementById('txDestWallet');
+
+      selectSrc.innerHTML = '';
+      selectDest.innerHTML = '';
+
+      appState.wallets.forEach(w => {
+        const opt1 = document.createElement('option');
+        opt1.value = w.id;
+        opt1.textContent = `${w.name} (${formatCurrency(w.balance)})`;
+        selectSrc.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = w.id;
+        opt2.textContent = `${w.name} (${formatCurrency(w.balance)})`;
+        selectDest.appendChild(opt2);
+      });
+
+      if (selectDest.options.length > 1) {
+        selectDest.selectedIndex = 1;
+      }
+    }
+
+    // Render KPI Metrics
+    function renderKPIs() {
+      let totalBalance = 0;
+      appState.wallets.forEach(w => totalBalance += Number(w.balance || 0));
+
+      let totalIncome = 0;
+      let totalExpense = 0;
+
+      appState.transactions.forEach(tx => {
+        if (currentSelectedWallet) {
+          if (tx.walletId !== currentSelectedWallet && tx.destWalletId !== currentSelectedWallet) {
+            return;
+          }
+        }
+        if (tx.type === 'income') {
+          totalIncome += Number(tx.amount || 0);
+        } else if (tx.type === 'expense') {
+          totalExpense += Number(tx.amount || 0);
+        }
+      });
+
+      document.getElementById('kpiTotalBalance').textContent = formatCurrency(totalBalance);
+      document.getElementById('kpiTotalIncome').textContent = `+${formatCurrency(totalIncome)}`;
+      document.getElementById('kpiTotalExpense').textContent = `-${formatCurrency(totalExpense)}`;
+      document.getElementById('kpiWalletCount').textContent = appState.wallets.length;
+    }
+
+    // Render Transactions Table
+    function renderTransactions() {
+      const tbody = document.getElementById('txTableBody');
+      tbody.innerHTML = '';
+
+      let filtered = appState.transactions.filter(tx => {
+        // Filter by Wallet
+        if (currentSelectedWallet) {
+          if (tx.walletId !== currentSelectedWallet && tx.destWalletId !== currentSelectedWallet) {
+            return false;
+          }
+        }
+        // Filter by Type
+        if (currentFilterType !== 'all' && tx.type !== currentFilterType) {
+          return false;
+        }
+        // Filter by Search Query
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          const noteMatch = (tx.note || '').toLowerCase().includes(query);
+          const catMatch = (tx.category || '').toLowerCase().includes(query);
+          if (!noteMatch && !catMatch) return false;
+        }
+        return true;
+      });
+
+      // Sort newest first
+      filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <div class="empty-icon">💸</div>
+                <p>No transactions match your current filters.</p>
+                <button class="btn btn-ghost btn-sm" style="margin-top:10px;" onclick="resetFilters()">Reset Filters</button>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach(tx => {
+        const tr = document.createElement('tr');
+        tr.className = 'tx-row';
+
+        const srcWallet = appState.wallets.find(w => w.id === tx.walletId);
+        const destWallet = tx.destWalletId ? appState.wallets.find(w => w.id === tx.destWalletId) : null;
+
+        let walletDisplay = srcWallet ? escapeHtml(srcWallet.name) : 'Unknown';
+        if (tx.type === 'transfer' && destWallet) {
+          walletDisplay = `${srcWallet?.name || 'Wallet'} ➔ ${destWallet.name}`;
+        }
+
+        const dateObj = new Date(tx.date);
+        const formattedDate = dateObj.toLocaleDateString(undefined, {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+        const formattedTime = dateObj.toLocaleTimeString(undefined, {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        let sign = '-';
+        let amountClass = 'expense';
+        if (tx.type === 'income') {
+          sign = '+';
+          amountClass = 'income';
+        } else if (tx.type === 'transfer') {
+          sign = '⇄ ';
+          amountClass = 'transfer';
+        }
+
+        const color = CATEGORY_COLORS[tx.category] || '#94a3b8';
+
+        tr.innerHTML = `
+          <td>
+            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 2px;">
+              ${escapeHtml(tx.note || tx.category)}
+            </div>
+            <span class="tx-category-badge" style="border-left: 3px solid ${color};">
+              ${escapeHtml(tx.category)}
+            </span>
+          </td>
+          <td>
+            <span class="tx-wallet-tag">👛 ${walletDisplay}</span>
+          </td>
+          <td>
+            <div style="color: var(--text-main); font-size: 13px;">${formattedDate}</div>
+            <div class="tx-date">${formattedTime}</div>
+          </td>
+          <td class="tx-amount ${amountClass}">
+            ${sign}${formatCurrency(tx.amount)}
+          </td>
+          <td style="text-align: center;">
+            <button class="btn-delete-tx" title="Delete record" onclick="deleteTransaction('${tx.id}')">✕</button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Render Category Breakdown & SVG Donut Chart
+    function renderCategoryBreakdown() {
+      const breakdownList = document.getElementById('categoryBreakdownList');
+      const donutSvg = document.getElementById('donutChartSvg');
+      breakdownList.innerHTML = '';
+      donutSvg.innerHTML = '';
+
+      const categoryTotals = {};
+      let totalSpent = 0;
+
+      appState.transactions.forEach(tx => {
+        if (tx.type !== 'expense') return;
+        if (currentSelectedWallet && tx.walletId !== currentSelectedWallet) return;
+
+        const cat = tx.category || 'General / Other';
+        categoryTotals[cat] = (categoryTotals[cat] || 0) + Number(tx.amount || 0);
+        totalSpent += Number(tx.amount || 0);
+      });
+
+      document.getElementById('chartTotalExpense').textContent = formatCurrency(totalSpent);
+
+      const sortedCategories = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+
+      if (sortedCategories.length === 0 || totalSpent === 0) {
+        breakdownList.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:13px;">No expense records yet to visualize.</div>`;
+        donutSvg.innerHTML = `<circle cx="50" cy="50" r="40" fill="transparent" stroke="rgba(255,255,255,0.06)" stroke-width="14" />`;
+        return;
+      }
+
+      // Draw SVG Donut Chart
+      const radius = 40;
+      const circumference = 2 * Math.PI * radius; // ~251.32
+      let strokeOffset = 0;
+
+      sortedCategories.forEach(([cat, amount]) => {
+        const pct = amount / totalSpent;
+        const strokeDasharray = `${pct * circumference} ${circumference}`;
+        const color = CATEGORY_COLORS[cat] || '#818cf8';
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '50');
+        circle.setAttribute('cy', '50');
+        circle.setAttribute('r', radius.toString());
+        circle.setAttribute('fill', 'transparent');
+        circle.setAttribute('stroke', color);
+        circle.setAttribute('stroke-width', '14');
+        circle.setAttribute('stroke-dasharray', strokeDasharray);
+        circle.setAttribute('stroke-dashoffset', (-strokeOffset).toString());
+        circle.setAttribute('stroke-linecap', 'round');
+        circle.setAttribute('style', 'transition: stroke-dasharray 0.5s ease;');
+
+        donutSvg.appendChild(circle);
+        strokeOffset += pct * circumference;
+
+        // Add to list
+        const item = document.createElement('div');
+        item.className = 'category-item';
+        item.innerHTML = `
+          <div class="category-info">
+            <div class="category-dot" style="background: ${color};"></div>
+            <div style="flex: 1;">
+              <div class="category-name">${escapeHtml(cat)}</div>
+              <div class="category-bar-wrap">
+                <div class="category-bar-fill" style="width: ${(pct * 100).toFixed(1)}%; background: ${color};"></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="category-amount">${formatCurrency(amount)}</div>
+            <div class="category-pct">${(pct * 100).toFixed(1)}%</div>
+          </div>
+        `;
+        breakdownList.appendChild(item);
+      });
+    }
+
+    // Master Render
+    function render() {
+      renderWallets();
+      populateWalletDropdowns();
+      renderKPIs();
+      renderCategoryBreakdown();
+      renderTransactions();
+    }
+
+    // Reset Filters
+    function resetFilters() {
+      currentFilterType = 'all';
+      currentSelectedWallet = null;
+      searchQuery = '';
+      document.getElementById('searchTxInput').value = '';
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === 'all');
+      });
+      render();
+    }
+
+    // Handle New Transaction Submission
+    document.getElementById('transactionForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const amount = parseFloat(document.getElementById('txAmount').value);
+      if (!amount || amount <= 0) {
+        showToast('Please enter a valid amount', 'error');
+        return;
+      }
+
+      const walletId = document.getElementById('txWallet').value;
+      const srcWallet = appState.wallets.find(w => w.id === walletId);
+      if (!srcWallet) {
+        showToast('Invalid source wallet selected', 'error');
+        return;
+      }
+
+      let category = document.getElementById('txCategory').value;
+      let destWalletId = null;
+
+      if (currentTxType === 'transfer') {
+        destWalletId = document.getElementById('txDestWallet').value;
+        if (destWalletId === walletId) {
+          showToast('Source and destination wallets must be different', 'error');
+          return;
+        }
+        category = 'Transfer';
+      }
+
+      const note = document.getElementById('txNote').value.trim();
+      const dateVal = document.getElementById('txDate').value;
+      const date = dateVal ? new Date(dateVal).toISOString() : new Date().toISOString();
+
+      // Adjust wallet balances
+      if (currentTxType === 'expense') {
+        srcWallet.balance -= amount;
+      } else if (currentTxType === 'income') {
+        srcWallet.balance += amount;
+      } else if (currentTxType === 'transfer') {
+        srcWallet.balance -= amount;
+        const destWallet = appState.wallets.find(w => w.id === destWalletId);
+        if (destWallet) destWallet.balance += amount;
+      }
+
+      const newTx = {
+        id: 'tx_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
+        type: currentTxType,
+        amount: amount,
+        walletId: walletId,
+        destWalletId: destWalletId,
+        category: category,
+        note: note,
+        date: date
+      };
+
+      appState.transactions.unshift(newTx);
+      saveState();
+
+      closeModal('modalTransaction');
+      document.getElementById('transactionForm').reset();
+      showToast('Transaction added successfully!');
+    });
+
+    // Handle Wallet Add / Edit
+    function editWallet(walletId) {
+      const wallet = appState.wallets.find(w => w.id === walletId);
+      if (!wallet) return;
+
+      document.getElementById('walletModalTitle').textContent = 'Edit Wallet Balance';
+      document.getElementById('editWalletId').value = wallet.id;
+      document.getElementById('walletName').value = wallet.name;
+      document.getElementById('walletType').value = wallet.type;
+      document.getElementById('walletBalance').value = wallet.balance;
+
+      openModal('modalWallet');
+    }
+
+    function deleteWallet(walletId) {
+      if (appState.wallets.length <= 1) {
+        showToast('You must keep at least one active wallet.', 'error');
+        return;
+      }
+      const wallet = appState.wallets.find(w => w.id === walletId);
+      if (!wallet) return;
+
+      if (!confirm(`Are you sure you want to delete the wallet "${wallet.name}"?`)) return;
+
+      appState.wallets = appState.wallets.filter(w => w.id !== walletId);
+      if (currentSelectedWallet === walletId) currentSelectedWallet = null;
+      saveState();
+      showToast(`Wallet "${wallet.name}" deleted.`);
+    }
+
+    document.getElementById('walletForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const editId = document.getElementById('editWalletId').value;
+      const name = document.getElementById('walletName').value.trim();
+      const type = document.getElementById('walletType').value;
+      const balance = parseFloat(document.getElementById('walletBalance').value) || 0;
+
+      if (!name) {
+        showToast('Please enter a wallet name', 'error');
+        return;
+      }
+
+      if (editId) {
+        const wallet = appState.wallets.find(w => w.id === editId);
+        if (wallet) {
+          wallet.name = name;
+          wallet.type = type;
+          wallet.balance = balance;
+        }
+        showToast(`Wallet "${name}" updated!`);
+      } else {
+        const newWallet = {
+          id: 'w_' + Date.now().toString(36),
+          name: name,
+          type: type,
+          balance: balance
+        };
+        appState.wallets.push(newWallet);
+        showToast(`New wallet "${name}" added!`);
+      }
+
+      closeModal('modalWallet');
+      saveState();
+    });
+
+    // Delete Transaction
+    function deleteTransaction(txId) {
+      const tx = appState.transactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      if (!confirm('Delete this transaction record? (Wallet balance will be reverted)')) return;
+
+      // Revert wallet balance effect
+      const srcWallet = appState.wallets.find(w => w.id === tx.walletId);
+      if (srcWallet) {
+        if (tx.type === 'expense') {
+          srcWallet.balance += tx.amount;
+        } else if (tx.type === 'income') {
+          srcWallet.balance -= tx.amount;
+        } else if (tx.type === 'transfer') {
+          srcWallet.balance += tx.amount;
+          const destWallet = appState.wallets.find(w => w.id === tx.destWalletId);
+          if (destWallet) destWallet.balance -= tx.amount;
+        }
+      }
+
+      appState.transactions = appState.transactions.filter(t => t.id !== txId);
+      saveState();
+      showToast('Record deleted and balance restored.');
+    }
+
+    // Export CSV
+    document.getElementById('btnExportCsv').addEventListener('click', () => {
+      if (appState.transactions.length === 0) {
+        showToast('No transactions to export', 'error');
+        return;
+      }
+
+      let csv = '\uFEFF'; // UTF-8 BOM
+      csv += 'Transaction ID,Type,Amount,Currency,Category,Source Wallet,Destination Wallet,Date,Time,Note\n';
+
+      appState.transactions.forEach(tx => {
+        const srcWallet = appState.wallets.find(w => w.id === tx.walletId)?.name || tx.walletId;
+        const destWallet = tx.destWalletId ? (appState.wallets.find(w => w.id === tx.destWalletId)?.name || tx.destWalletId) : '';
+        const d = new Date(tx.date);
+        const dateStr = d.toLocaleDateString();
+        const timeStr = d.toLocaleTimeString();
+        const safeNote = (tx.note || '').replace(/"/g, '""');
+
+        csv += `"${tx.id}","${tx.type}",${tx.amount},"${appState.currency || '₹'}","${tx.category}","${srcWallet}","${destWallet}","${dateStr}","${timeStr}","${safeNote}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `wallet_expenses_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('CSV Export downloaded!');
+    });
+
+    // Backup JSON
+    document.getElementById('btnBackupJson').addEventListener('click', () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+      const a = document.createElement('a');
+      a.href = dataStr;
+      a.download = `wallet_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      showToast('JSON Backup downloaded!');
+    });
+
+    // Restore JSON
+    document.getElementById('btnRestoreJson').addEventListener('click', () => {
+      document.getElementById('importFileInput').click();
+    });
+
+    document.getElementById('importFileInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          if (imported && Array.isArray(imported.wallets) && Array.isArray(imported.transactions)) {
+            appState = imported;
+            saveState();
+            showToast('Backup restored successfully!');
+          } else {
+            showToast('Invalid backup file format.', 'error');
+          }
+        } catch (err) {
+          showToast('Error reading JSON backup file.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // Event Listeners for Filters & Modals
+    document.getElementById('btnOpenNewTxModal').addEventListener('click', () => {
+      document.getElementById('txDate').value = new Date().toISOString().slice(0, 16);
+      switchTxType('expense');
+      openModal('modalTransaction');
+    });
+
+    document.getElementById('btnAddWalletModal').addEventListener('click', () => {
+      document.getElementById('walletModalTitle').textContent = 'Add New Wallet';
+      document.getElementById('editWalletId').value = '';
+      document.getElementById('walletForm').reset();
+      openModal('modalWallet');
+    });
+
+    document.getElementById('btnFilterAllWallets').addEventListener('click', () => {
+      currentSelectedWallet = null;
+      render();
+    });
+
+    document.querySelectorAll('.filter-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilterType = btn.dataset.filter;
+        renderTransactions();
+      });
+    });
+
+    document.getElementById('searchTxInput').addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      renderTransactions();
+    });
+
+    document.getElementById('currencySelector').value = appState.currency || '₹';
+    document.getElementById('currencySelector').addEventListener('change', (e) => {
+      appState.currency = e.target.value;
+      saveState();
+    });
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // Initialize App
+    render();
+  </script>
+</body>
+
+</html>

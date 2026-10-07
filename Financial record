@@ -1,0 +1,32 @@
+"""
+Smart Wallet & Financial Record Tracker Launcher
+Run this file directly or run `python financial_record.py`
+"""
+import os
+import sys
+
+if sys.platform == "win32":
+    try:
+        if sys.stdout and hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        if sys.stderr and hasattr(sys.stderr, "reconfigure"):
+            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
+# Ensure local directory is in path
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_DIR)
+
+from financial_record import launch_gui, run_cli
+
+if __name__ == "__main__":
+    if "--cli" in sys.argv:
+        run_cli()
+    else:
+        try:
+            launch_gui()
+        except Exception as e:
+            print(f"Starting in CLI mode: {e}")
+            run_cli()

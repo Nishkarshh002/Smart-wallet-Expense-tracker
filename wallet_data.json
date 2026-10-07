@@ -1,0 +1,53 @@
+{
+  "currency": "₹",
+  "wallets": [
+    {
+      "id": "w_cash",
+      "name": "Pocket Cash Wallet",
+      "type": "cash",
+      "balance": 2000.0
+    },
+    {
+      "id": "w_bank",
+      "name": "Main Bank (Savings)",
+      "type": "bank",
+      "balance": 28400.0
+    },
+    {
+      "id": "w_card",
+      "name": "Credit Card",
+      "type": "card",
+      "balance": 12000.0
+    }
+  ],
+  "transactions": [
+    {
+      "id": "tx_1",
+      "type": "income",
+      "amount": 35000.0,
+      "walletId": "w_bank",
+      "category": "Salary & Wages",
+      "note": "Monthly salary credited",
+      "date": "2026-10-04 19:56"
+    },
+    {
+      "id": "tx_2",
+      "type": "transfer",
+      "amount": 3000.0,
+      "walletId": "w_bank",
+      "destWalletId": "w_cash",
+      "category": "Transfer",
+      "note": "ATM cash withdrawal for wallet",
+      "date": "2026-10-04 19:56"
+    },
+    {
+      "id": "tx_3",
+      "type": "expense",
+      "amount": 450.0,
+      "walletId": "w_cash",
+      "category": "Food & Dining",
+      "note": "Lunch with friends",
+      "date": "2026-10-04 19:56"
+    }
+  ]
+}
